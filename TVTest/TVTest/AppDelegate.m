@@ -1,46 +1,43 @@
 //
-//  CLAppDelegate.m
-//  EECP
+//  AppDelegate.m
+//  TVTest
 //
-//  Created by Austin Gregg on 10/14/13.
-//  Copyright (c) 2013 CleverLever. All rights reserved.
+//  Created by Austin Gregg on 10/20/13.
+//  Copyright (c) 2013 BottleRocket. All rights reserved.
 //
 
-#import "CLAppDelegate.h"
-#import "CLCPViewController.h"
-#import "IIViewDeckController.h"
-#import "CLFirstLoginViewController.h"
+#import "AppDelegate.h"
 
-@implementation CLAppDelegate
+#import "MasterViewController.h"
+
+@implementation AppDelegate
+
+- (void)dealloc
+{
+    [_window release];
+    [_managedObjectContext release];
+    [_managedObjectModel release];
+    [_persistentStoreCoordinator release];
+    [_navigationController release];
+    [super dealloc];
+}
 
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize navigationController=_navigationController;
-@synthesize window=_window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [_window setRootViewController:_navigationController];
-    
-    [_window makeKeyAndVisible];
+    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+    // Override point for customization after application launch.
+
+    MasterViewController *masterViewController = [[[MasterViewController alloc] initWithNibName:@"MasterViewController" bundle:nil] autorelease];
+    self.navigationController = [[[UINavigationController alloc] initWithRootViewController:masterViewController] autorelease];
+    masterViewController.managedObjectContext = self.managedObjectContext;
+    self.window.rootViewController = self.navigationController;
+    [self.window makeKeyAndVisible];
     return YES;
 }
-
-//- (IIViewDeckController*)generateControllerStack {
-//    LeftViewController* leftController = [[LeftViewController alloc] initWithNibName:@"LeftViewController" bundle:nil];
-//    RightViewController* rightController = [[RightViewController alloc] initWithNibName:@"RightViewController" bundle:nil];
-//    
-//    UIViewController *centerController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
-//    centerController = [[UINavigationController alloc] initWithRootViewController:centerController];
-//    IIViewDeckController* deckController =  [[IIViewDeckController alloc] initWithCenterViewController:centerController
-//                                                                                    leftViewController:leftController
-//                                                                                   rightViewController:rightController];
-//    deckController.rightSize = 100;
-//    
-//    [deckController disablePanOverViewsOfClass:NSClassFromString(@"_UITableViewHeaderFooterContentView")];
-//    return deckController;
-//}
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -67,15 +64,15 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Saves changes in the application's managed object context before the application terminates.
-//    [self saveContext];
+    [self saveContext];
 }
 
 - (void)saveContext
 {
     NSError *error = nil;
-//    NSManagedObjectContext *_managedObjectContext = self.managedObjectContext;
-    if (_managedObjectContext != nil) {
-        if ([_managedObjectContext hasChanges] && ![_managedObjectContext save:&error]) {
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
+    if (managedObjectContext != nil) {
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
              // Replace this implementation with code to handle the error appropriately.
              // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development. 
             NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -109,7 +106,7 @@
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
     }
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"EECP" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"TVTest" withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     return _managedObjectModel;
 }
@@ -122,7 +119,7 @@
         return _persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"EECP.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"TVTest.sqlite"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
